@@ -150,15 +150,15 @@ public abstract class RxAppCompatActivity extends AppCompatActivity {
      */
     private void showRationaleDialog(String desc, final String[] permissions, final int requestCode) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(getString(R.string.tips))
+        builder.setTitle(getString(R.string.Jooyer_Retrofit_Tips))
                 .setMessage(desc)
-                .setPositiveButton(getResources().getString(R.string.confrim), new DialogInterface.OnClickListener() {
+                .setPositiveButton(getResources().getString(R.string.Jooyer_Retrofit_Confirm), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         ActivityCompat.requestPermissions(RxAppCompatActivity.this, permissions, requestCode);
                     }
                 })
-                .setNegativeButton(getResources().getString(R.string.cancle), new DialogInterface.OnClickListener() {
+                .setNegativeButton(getResources().getString(R.string.Jooyer_Retrofit_Cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();

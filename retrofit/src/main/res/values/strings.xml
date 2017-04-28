@@ -1,10 +1,8 @@
 <resources>
-    <string name="app_name">JooyerRetrofit</string>
 
-    <string name="tips">温馨提示</string>
-    <string name="cancle">取消</string>
-    <string name="confrim">确认</string>
-    <string name="permission_desc">为了应用可以正常使用，请您点击确认申请权限。</string>
-    <string name="invitation_issue_provide">发供求</string>
+    <string name="Jooyer_Retrofit_Tips">温馨提示</string>
+    <string name="Jooyer_Retrofit_Cancel">取消</string>
+    <string name="Jooyer_Retrofit_Confirm">确认</string>
+    <string name="Jooyer_Retrofit_Permission_desc">为了应用可以正常使用，请您点击确认申请权限。</string>
 
 </resources>
