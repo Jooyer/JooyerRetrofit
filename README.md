@@ -73,6 +73,7 @@ PS:在这里,大家可能注意到了,我们返回值用的 String,之所以这�
 
 ## Activity 中使用
 ###1.使用 RxAppCompatActivity
+
 	. 写一个继承自RxAppCompatActivity的 Activity
 	. 实例化一个 HttpManager,虽然说有许多大神建议写一个单利,这个仁者见仁.
 
@@ -171,6 +172,7 @@ PS:在这里,大家可能注意到了,我们返回值用的 String,之所以这�
 
 
 ###2.不使用 RxAppCompatActivity
+
 	.这里我就不写代码了,主要讲下区别
 		1. 可以选择继承或者RxAppCompatActivity
 		2. 不需要调用 BaseApi.setRx...()
@@ -178,15 +180,18 @@ PS:在这里,大家可能注意到了,我们返回值用的 String,之所以这�
 		4. 其他和使用 RxAppCompatActivity 一样
 		
 ###3.使用 RxFragment
+
 	.和 RxAppCompatActivity 类似,有3个区别
 		1. Fragment 继承自 RxFragment
 		2. 需要调用 BaseApi.setRxFragment()
 		3. 需要调用 HttpManager.doWithRxFragment()
 		
 ###4.不使用 RxFragment
+
 	.和不使用 RxAppCompatActivity 一样的用法 
 
 ###使用小技巧:
+
 	. 无论写匿名 BaseApi 还是 继承自 BaseApi ,都写上泛型类型(就是你的请求接口类 
 		HttpService),方便使用且不需要强转,不易出错!
 	. BaseApi中,都是可以链式调用
@@ -195,9 +200,11 @@ PS:在这里,大家可能注意到了,我们返回值用的 String,之所以这�
 
 
 ##特别鸣谢: 
+
 [小河马](http://www.jianshu.com/p/bd758f51742e),同时感谢各种开源大神,开源公司的付出,我再一次站在巨人的肩膀上了!
 
 ## License
+
 
 ```
 
