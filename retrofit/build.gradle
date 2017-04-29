@@ -144,7 +144,7 @@ bintray {
     pkg {
         repo = "maven"  //发布到Bintray的哪个仓库
         name = "JooyerRetrofit"    //发布到JCenter上的项目名字
-        desc = "A library of the Retrofit library, more convenient callback and request management!" //描述
+        desc = "A library of the Retrofit , more convenient callback and request management!" //描述
         websiteUrl = siteUrl
         issueTrackerUrl = issueUrl
         vcsUrl = gitUrl

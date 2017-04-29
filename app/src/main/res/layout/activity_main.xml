@@ -1,20 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="10dp"
+    android:orientation="vertical"
     >
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_centerInParent="true"
         android:background="#6dfda7"
-        android:onClick="onTest"
-        android:text="测试Retrofit"
+        android:onClick="onActivityTest"
+        android:text="测试在Activity的使用"
+        android:gravity="center"
         android:textColor="#000000"
         android:textSize="20sp"
         />
-</RelativeLayout>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="40dp"
+        android:background="#6dfda7"
+        android:onClick="onFragmentTest"
+        android:text="测试在Fragment的使用"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:gravity="center"
+        />
+
+    <FrameLayout
+        android:id="@+id/fl_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>

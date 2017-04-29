@@ -41,20 +41,16 @@ public class DemoActivity extends RxAppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_demo);
         tv_test = (TextView) findViewById(R.id.tv_test);
-
-        manager = new HttpManager(mOnHttpCallBackListener, this);
-
-        // 使用 Token 来验证登录过期等
-//        manager = new HttpManager(mOnHttpCallBackListener, this,true);
-
+        manager = new HttpManager(this, mOnHttpCallBackListener);
     }
 
     /**
-     * 测试
+     * 测试不使用 RxLife
+     *  PS: 就是继承自 Rx...,如果不调用 HttpManager.doHttpWithRx...,则就是不使用 Rx..
      */
     public void onRetrofitWithOutRxLife(View view) {
 
-        // 这里需要强转
+        // 这里直接实现BaseApi,则由于泛型的关系,需要强转
 //        manager.doHttpWithOutRxActivity(HttpService.class, new BaseApi() {
 //            @Override
 //            public Observable<String> getObservable(Object service) {
@@ -72,11 +68,14 @@ public class DemoActivity extends RxAppCompatActivity {
 
         // 使用实现了 BaseApi 的 TestApi
         // 测试不使用 RxLife管理其下载
-        manager.doHttpWithOutRxActivity(HttpService.class, new TestApi());
+        manager.doHttpWithOutRxActivity(new TestApi(), HttpService.class);
 
     }
 
-    //  使用 RxLife管理其下载
+
+    /**
+     * 使用 RxLife管理其下载
+     */
     public void onRetrofitWithRxLife(View view) {
         TestApi api = new TestApi();
         // 使用 RxLife 管理下载生命周期必须设置
@@ -92,7 +91,7 @@ public class DemoActivity extends RxAppCompatActivity {
         // 推荐写法 ,将 HttpService 中的剩余部分链接放在这里,也不会造成缓存的 KEY 发生重复冲突
         api.setMethod("data/Android/2/1");
 
-        manager.doHttpWithRxActivity(HttpService.class, api);
+        manager.doHttpWithRxActivity(api, HttpService.class);
     }
 
 }

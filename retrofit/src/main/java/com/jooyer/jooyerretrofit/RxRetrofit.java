@@ -1,6 +1,7 @@
 package com.jooyer.jooyerretrofit;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.text.TextUtils;
 
@@ -30,6 +31,10 @@ public class RxRetrofit {
     @SuppressLint("StaticFieldLeak")
     private static RxRetrofit mRxRetrofit;
     private OkHttpClient.Builder mBuilder;
+
+    // 请求时的显示进度界面
+    private ProgressDialog mProgressDialog;
+
 
     private RxRetrofit() {
     }
@@ -123,5 +128,11 @@ public class RxRetrofit {
         return mBaseUrl;
     }
 
+    public ProgressDialog getProgressDialog() {
+        return mProgressDialog;
+    }
 
+    public void setProgressDialog(ProgressDialog progressDialog) {
+        mProgressDialog = progressDialog;
+    }
 }

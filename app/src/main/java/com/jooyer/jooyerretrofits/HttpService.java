@@ -3,6 +3,7 @@ package com.jooyer.jooyerretrofits;
 import okhttp3.ResponseBody;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.Query;
 import retrofit2.http.Streaming;
 import retrofit2.http.Url;
 import rx.Observable;
@@ -16,10 +17,22 @@ import rx.Observable;
 public interface HttpService {
 
     /**
-     *  Retrofit 基本使用时调用的接口
+     *  获取一条信息
      */
     @GET("data/Android/2/1")
+    Observable<String> getAndroidSingle();
+
+    /**
+     *  获取一个集合
+     */
+    @GET("data/Android/2/10")
     Observable<String> getAndroidList();
+
+    /**
+     *  获取一个集合
+     */
+    @GET("data/Android/2/")
+    Observable<String> getAndroidCountList(@Query("count")String count);
 
     /**
      *  下载

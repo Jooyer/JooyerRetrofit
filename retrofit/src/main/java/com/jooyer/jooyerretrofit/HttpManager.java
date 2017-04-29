@@ -7,6 +7,7 @@ import com.jooyer.jooyerretrofit.exception.RetryWhenNetWorkException;
 import com.jooyer.jooyerretrofit.http.TokenInterceptor;
 import com.jooyer.jooyerretrofit.listener.OnHttpCallBackListener;
 import com.jooyer.jooyerretrofit.rxlife.ActivityLifeCycleEvent;
+import com.jooyer.jooyerretrofit.rxlife.FragmentLifeCycleEvent;
 import com.jooyer.jooyerretrofit.subscribers.ProgressSubscriber;
 
 import java.lang.ref.SoftReference;
@@ -34,7 +35,7 @@ public class HttpManager {
     /**
      * 默认是没有 Token 的请求
      */
-    public HttpManager(OnHttpCallBackListener callBackListener, Context context) {
+    public HttpManager(Context context,OnHttpCallBackListener callBackListener) {
         mCallBackListener = new SoftReference<OnHttpCallBackListener>(callBackListener);
         mContext = new SoftReference<Context>(context);
         initRetrofit();
@@ -43,7 +44,7 @@ public class HttpManager {
     /**
      * 带 Token
      */
-    public HttpManager(OnHttpCallBackListener callBackListener, Context context, boolean hanToken) {
+    public HttpManager(Context context,OnHttpCallBackListener callBackListener, boolean hanToken) {
         mCallBackListener = new SoftReference<OnHttpCallBackListener>(callBackListener);
         mContext = new SoftReference<Context>(context);
         isHasToken = hanToken;
@@ -88,7 +89,7 @@ public class HttpManager {
     /**
      * 有 RxLife 的 Activity
      */
-    public <T> void doHttpWithRxActivity(Class<T> service,BaseApi api) {
+    public <T> void doHttpWithRxActivity(BaseApi api,Class<T> service) {
         ProgressSubscriber subscriber = new ProgressSubscriber(api, mContext, mCallBackListener);
         Observable<String> observable = api.getObservable(createApi(service))
                 .retryWhen(new RetryWhenNetWorkException())
@@ -104,7 +105,7 @@ public class HttpManager {
     /**
      * 没有 RxLife 的 Activity
      */
-    public <T> void doHttpWithOutRxActivity(Class<T> service,BaseApi api) {
+    public <T> void doHttpWithOutRxActivity(BaseApi api,Class<T> service) {
         ProgressSubscriber subscriber = new ProgressSubscriber(api, mContext, mCallBackListener);
         Observable observable = api.getObservable(createApi(service))
                 .retryWhen(new RetryWhenNetWorkException())
@@ -124,7 +125,7 @@ public class HttpManager {
         Observable observable = api.getObservable(createApi(service))
                 .retryWhen(new RetryWhenNetWorkException())
                 .onErrorResumeNext(funcException)
-                .compose(api.getRxAppCompatActivity().bindUntilEvent(ActivityLifeCycleEvent.STOP))
+                .compose(api.getRxFragment().bindUntilEvent(FragmentLifeCycleEvent.STOP))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .unsubscribeOn(Schedulers.io());
