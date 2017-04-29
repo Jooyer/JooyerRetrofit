@@ -1,7 +1,5 @@
 # JooyerRetrofit
----
-这是一个使用 RxJava + Retrofit + FastJson 封装的库,内部使用了 RxLife 来管理请求状态与 Activivty/Fragment 的生命周期同步, 
-同时默认使用了GreenDao来处理缓存!
+这是一个使用 RxJava + Retrofit + FastJson 封装的库,内部使用了 RxLife 来管理请求状态与 Activivty/Fragment 的生命周期同步, 同时默认使用了GreenDao来处理缓存!
 
 ## 联系我:
 如果在使用中,有任何疑问,可以加 我微信(QQ) 712952521,我乐意与你探讨!<br/>
@@ -9,7 +7,6 @@
 
 
 # Add dependency
----
 
 ## Gradle
 	compile 'com.jooyer.jooyerretrofit:JooyerRetrofit:0.0.2'
@@ -24,7 +21,6 @@
 	</dependency>
 
 # 使用方法
----
 ## RxLife 管理请求
 &emsp;PS:使用 RxLife 管理请求,就是希望在 Activity 界面 onPause()
 或者 onStop() 时,我们停止请求,这样做有两个目的:<br/>
@@ -204,7 +200,8 @@ PS:在这里,大家可能注意到了,我们返回值用的 String,之所以这�
 ## License
 
 ```
-Copyright 2017 Jooyer
+
+&copy;Copyright 2017 Jooyer
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
