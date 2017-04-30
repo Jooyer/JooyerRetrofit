@@ -5,11 +5,16 @@
 如果在使用中,有任何疑问,可以加 我微信(QQ) 712952521,我乐意与你探讨!<br/>
 请关注 [我的Github]("https://github.com/Jooyer")
 
+## 版本(Version)
+&emsp;	0.0.3	修改 0.0.2 版本中的的不正确部分!更新了参数格式,见参知意!
+
+&emsp;	0.0.2	首次提交,出现部分参数格式不整齐,ProgressDialog 文本提示位置不正确!
+
 
 # Add dependency
 
 ## Gradle
-	compile 'com.jooyer.jooyerretrofit:JooyerRetrofit:0.0.2'
+	compile 'com.jooyer.jooyerretrofit:retrofit:0.0.3'
 
 ## Maven
 
@@ -43,7 +48,7 @@
 PS:在这里,大家可能注意到了,我们返回值用的 String,之所以这样,其实其主要目的为了更自由的回调处理.我们可以根据服务器对应接口返回的 String 解析 成相应的 Bean,同时可以统一处理服务器返回的错误信息,如成功 200, 错误603...
 
 ## Retrofit 初始化
-定义一个 Application ,在里面初始化 Retrofit 必要信息,也可以放在 Application 中异步处理
+定义一个 Application ,在里面初始化 Retrofit 必要信息,我将其放在异步中处理,所以大家尽可放心!
 
 	public class MyApplication extends Application {
 	    @Override
