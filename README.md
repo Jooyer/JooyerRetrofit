@@ -157,7 +157,7 @@ PS:在这里,大家可能注意到了,我们返回值用的 String,之所以这�
 		   private OnHttpCallBackListener mOnHttpCallBackListener = new OnHttpCallBackListener() {
         @Override
         public void onNext(String result, String method) {
-			// 在这里,由于每一个界面服务器返回的 json 数据结构和内容不一致
+			// 在这里,由于每一个界面服务器返回的 json 数据结构都不一样,所以这里返回 json 字符串!
 			// 我们可以根据 json 创建不同的 Bean, 温馨提示: Android Studio 
 			// 可以下载 GsonFromat 处理,效果杠杠的
 			// 我们解析 result 为相应的 Bean 
