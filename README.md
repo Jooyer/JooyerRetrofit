@@ -7,8 +7,8 @@
 
 ## 版本(Version)
 &emsp;	1.0.0	
-&emsp;&emsp;1.将 Retrofit 版本从 2.0.0 升级到 2.3.0,将 RxJava 从 1.2.1 升级到 2.0.1
-&emsp;&emsp;2.修复在上传文件时,Retroift报 没有 value 的错误而导致无法上传!
+&emsp;&emsp;1.将 Retrofit 版本从 2.0.0 升级到 2.3.0,将 RxJava 从 1.2.1 升级到 2.0.1<br/>
+&emsp;&emsp;2.修复在上传文件时,Retroift报 没有 value 的错误而导致无法上传!<br/>
 &emsp;&emsp;3.精简了一部分方法,减少方法数!
 
 &emsp;	0.0.3	
