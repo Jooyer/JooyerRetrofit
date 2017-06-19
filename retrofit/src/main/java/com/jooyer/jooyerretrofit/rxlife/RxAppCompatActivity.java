@@ -16,9 +16,12 @@ import android.util.Log;
 import com.jooyer.jooyerretrofit.R;
 import com.jooyer.jooyerretrofit.listener.OnPermissionsResultListener;
 
-import rx.Observable;
-import rx.functions.Func1;
-import rx.subjects.BehaviorSubject;
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.ObservableTransformer;
+import io.reactivex.functions.Predicate;
+import io.reactivex.subjects.BehaviorSubject;
+
 
 /**
  * http://blog.csdn.net/dd864140130/article/details/53029617
@@ -78,20 +81,18 @@ public abstract class RxAppCompatActivity extends AppCompatActivity {
 
 
     @NonNull
-    public <T> Observable.Transformer<T, T> bindUntilEvent(@NonNull final ActivityLifeCycleEvent event) {
-        return new Observable.Transformer<T, T>() {
+    public <T> ObservableTransformer<T, T> bindUntilEvent(@NonNull final ActivityLifeCycleEvent event) {
+        return new ObservableTransformer<T, T>() {
             @Override
-            public Observable<T> call(Observable<T> sourceObservable) {
-                Observable<ActivityLifeCycleEvent> compareLifecycleObservable =
-                        lifeSubject.takeFirst(new Func1<ActivityLifeCycleEvent, Boolean>() {
-                            @Override
-                            public Boolean call(ActivityLifeCycleEvent activityLifeCycleEvent) {
-                                Log.i("RxAppCompatActivity","===========RxAppCompatActivity=====bindUntilEvent===" + event + "==========" + activityLifeCycleEvent);
-                                /* 当返回true时表示停止请求网络 */
-                                return activityLifeCycleEvent.equals(event);
-                            }
-                        });
-                return sourceObservable.takeUntil(compareLifecycleObservable);
+            public ObservableSource<T> apply(@io.reactivex.annotations.NonNull Observable<T> upstream) {
+                Observable<ActivityLifeCycleEvent> lifeCycleEventObservable = lifeSubject.filter(new Predicate<ActivityLifeCycleEvent>() {
+                    @Override
+                    public boolean test(@io.reactivex.annotations.NonNull ActivityLifeCycleEvent activityLifeCycleEvent) throws Exception {
+                        Log.i("RxAppCompatActivity","========91====== " + (activityLifeCycleEvent.equals(event)));
+                        return activityLifeCycleEvent.equals(event);
+                    }
+                });
+                return upstream.takeUntil(lifeCycleEventObservable);
             }
         };
     }

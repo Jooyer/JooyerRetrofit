@@ -3,8 +3,6 @@ package com.jooyer.jooyerretrofits;
 
 import com.jooyer.jooyerretrofit.BaseApi;
 
-import rx.Observable;
-
 /**
  * Created by Jooyer on 2017/4/18
  */
@@ -21,11 +19,11 @@ public class TestApi extends BaseApi<HttpService> {
         this.count = count;
     }
 
+
     @Override
-    public Observable<String> getObservable(HttpService service) {
+    public io.reactivex.Observable<String> getObservable(HttpService service) {
         // 在 BaseApi 中有一个 mApiFlag 属性
         // 其主要作用是: 一个 TestApi 可以包含多个请求数据
-
         if (1 == mApiFlag){
             return service.getAndroidSingle();
         }else if (2 == mApiFlag){

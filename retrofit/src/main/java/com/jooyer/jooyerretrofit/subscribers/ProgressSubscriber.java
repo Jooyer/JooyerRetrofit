@@ -17,15 +17,18 @@ import com.jooyer.jooyerretrofit.utils.CommUtil;
 
 import java.lang.ref.SoftReference;
 
-import rx.Observable;
-import rx.Subscriber;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+
 
 /**
  * 用于 Http 请求开始时,显示一个 progress
  * 当请求结束时, 关闭 progress
  * Created by Jooyer on 2017/2/14
  */
-public class ProgressSubscriber<T> extends Subscriber<T> {
+public class ProgressSubscriber<T> implements Observer<T> {
 
     private static final String TAG = "ProgressSubscriber";
     private SoftReference<OnHttpCallBackListener> mCallBackListener;
@@ -44,7 +47,7 @@ public class ProgressSubscriber<T> extends Subscriber<T> {
         if (mApi.isShowProgress()) {
             initProgressDialog(mApi.isCancel());
         }
-
+        Log.i(TAG, "===ProgressSubscriber====== " + Thread.currentThread().getName());
     }
 
     public ProgressDialog getDialog() {
@@ -56,6 +59,7 @@ public class ProgressSubscriber<T> extends Subscriber<T> {
     }
 
     private void initProgressDialog(boolean isCancel) {
+        Log.i(TAG, "===initProgressDialog======1 ");
         Context context = mContext.get();
         if (null == mDialog && null != context) {
             if (null != RxRetrofit.getInstance().getProgressDialog()) {
@@ -65,6 +69,7 @@ public class ProgressSubscriber<T> extends Subscriber<T> {
                 mDialog.setMessage("正在加载...");
             }
             mDialog.setCancelable(isCancel);
+            Log.i(TAG, "===initProgressDialog======2 ");
         }
 
         if (null != mDialog && isCancel) { // 可以取消 dialog
@@ -82,8 +87,8 @@ public class ProgressSubscriber<T> extends Subscriber<T> {
      * 取消 Progress 时,也取消了对 Observable 的订阅,同时也取消了 Http 请求
      */
     private void onCancelProgress() {
-        if (!isUnsubscribed()) {
-            unsubscribe();
+        if (null != mDisposable && !mDisposable.isDisposed()) {
+            mDisposable.dispose();
         }
     }
 
@@ -111,45 +116,66 @@ public class ProgressSubscriber<T> extends Subscriber<T> {
                 mDialog.dismiss();
             }
         }
+        if (null != mDisposable && !mDisposable.isDisposed()) {
+            mDisposable.dispose();
+        }
     }
 
-    /**
-     * 开始订阅
-     */
+    private Disposable mDisposable;
+
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onSubscribe(@NonNull Disposable d) {
+        Log.i(TAG, "===onSubscribe====== ");
+        mDisposable = d;
         showProgressDialog();
-        Log.i(TAG, "==========onStart==0=== :  " + mApi.isCache());
+        Log.i(TAG, "=====onStart===== :  " + mApi.isCache());
         // 有网 并且有缓存
         if (mApi.isCache() && CommUtil.isNetWorkAvailable(RxRetrofit.getInstance().getContext())) {
-            Log.i(TAG, "=========onStart==1===" + mApi.getUrl());
+            Log.i(TAG, "=====onStart===== :  " + mApi.getUrl());
             CookieResult result = CacheManager.getInstance().queryEntry(mApi.getUrl());
             if (null != result) {
                 long time = (System.currentTimeMillis() - result.getTime()) / 1000;
-                Log.i(TAG, "============onStart==2===" + time + "=====" + mApi.getCacheTimeInConnect());
+                Log.i(TAG, "=====onStart===== :  " + time + "=====" + mApi.getCacheTimeInConnect());
                 if (time < mApi.getCacheTimeInConnect()) {
                     if (null != mCallBackListener.get()) {
                         mCallBackListener.get().onNext(result.getResult(), mApi.getMethod());
                     }
-                    Log.i(TAG, "============onStart==3===");
-                    onCompleted();
-                    unsubscribe();
-
+                    Log.i(TAG, "=====onStart===== ");
+                    onComplete();
+                    d.dispose();
                 }
             }
         }
-        Log.i(TAG, "==========onStart==4===");
     }
 
     @Override
-    public void onCompleted() {
-        Log.i(TAG, "===onCompleted==1===");
-        dismissProgressDialog();
+    public void onNext(@NonNull T t) {
+        Log.i(TAG, "===onNext====== ");
+        if (mApi.isCache()) {
+            CookieResult result = CacheManager.getInstance().queryEntry(mApi.getUrl());
+            long time = System.currentTimeMillis();
+            if (null == result) {
+                //保存
+                result = new CookieResult(mApi.getUrl(), t.toString(), time);
+                CacheManager.getInstance().savedEntry(result);
+                Log.i(TAG, "===onNext===== (null == result) ");
+            } else {
+                // 更新
+                result.setResult(t.toString());
+                result.setTime(time);
+                CacheManager.getInstance().updateEntry(result);
+                Log.i(TAG, "===onNext==3=== ok ");
+            }
+        }
+        if (null != mCallBackListener.get()) {
+            mCallBackListener.get().onNext(t.toString(), mApi.getMethod());
+            Log.i(TAG, "===onNext==4=== callback ");
+            dismissProgressDialog();
+        }
     }
 
     @Override
-    public void onError(Throwable e) {
+    public void onError(@NonNull Throwable e) {
         Log.i(TAG, "=========onError==1=== : " + mApi.isCache());
         dismissProgressDialog();
         // 需要缓存并且本地有缓存则返回缓存数据
@@ -160,24 +186,29 @@ public class ProgressSubscriber<T> extends Subscriber<T> {
             Log.i(TAG, "=========onError==3===");
             errorDo(e);
         }
+
     }
 
+    @Override
+    public void onComplete() {
+        if (null != mDisposable && !mDisposable.isDisposed()) {
+            mDisposable.dispose();
+        }
+    }
+
+    //获取缓存数据
     private void getCache() {
         Observable.just(mApi.getUrl())
-                .subscribe(new Subscriber<String>() {
-                    @Override
-                    public void onCompleted() {
+                .subscribe(new Observer<String>() {
+                    Disposable mDisposable;
 
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+                        mDisposable = d;
                     }
 
                     @Override
-                    public void onError(Throwable e) {
-                        errorDo(e);
-                    }
-
-                    @Override
-                    public void onNext(String s) {
-                        //获取缓存数据
+                    public void onNext(@NonNull String s) {
                         CookieResult result = CacheManager.getInstance().queryEntry(s);
                         if (null == result) {
                             throw new HttpTimeException(HttpTimeException.NO_CACHE_ERROR);
@@ -192,34 +223,19 @@ public class ProgressSubscriber<T> extends Subscriber<T> {
                             CacheManager.getInstance().deleteEntry(result);
                             throw new HttpTimeException(HttpTimeException.CACHE_LOSE_EFFICACY_ERROR);
                         }
+                    }
 
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        errorDo(e);
+                        mDisposable.dispose();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        mDisposable.dispose();
                     }
                 });
-
-    }
-
-    @Override
-    public void onNext(T t) {
-        Log.i(TAG, "===onNext==1===");
-        if (mApi.isCache()) {
-            CookieResult result = CacheManager.getInstance().queryEntry(mApi.getUrl());
-            long time = System.currentTimeMillis();
-            if (null == result) {
-                //保存
-                result = new CookieResult(mApi.getUrl(), t.toString(), time);
-                CacheManager.getInstance().savedEntry(result);
-                Log.i(TAG, "===onNext==2===");
-            } else {
-                // 更新
-                result.setResult(t.toString());
-                result.setTime(time);
-                CacheManager.getInstance().updateEntry(result);
-                Log.i(TAG, "===onNext==3===");
-            }
-        }
-        if (null != mCallBackListener.get()) {
-            mCallBackListener.get().onNext(t.toString(), mApi.getMethod());
-        }
 
     }
 
@@ -239,4 +255,6 @@ public class ProgressSubscriber<T> extends Subscriber<T> {
             onHttpCallBackListener.onError(new ApiException(e.getMessage(), e, ExceptionCode.UNKNOWN_ERROR_CODE));
         }
     }
+
+
 }

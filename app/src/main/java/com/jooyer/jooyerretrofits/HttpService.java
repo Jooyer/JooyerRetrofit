@@ -1,41 +1,41 @@
 package com.jooyer.jooyerretrofits;
 
+import io.reactivex.Observable;
 import okhttp3.ResponseBody;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
-import retrofit2.http.Query;
+import retrofit2.http.Path;
 import retrofit2.http.Streaming;
 import retrofit2.http.Url;
-import rx.Observable;
 
 /**
- *  使用 Retrofit 必须的:
- *   一个统一的接口
- *
+ * 使用 Retrofit 必须的:
+ * 一个统一的接口
+ * <p>
  * Created by Jooyer on 2017/2/13
  */
 public interface HttpService {
 
     /**
-     *  获取一条信息
+     * 获取一条信息
      */
     @GET("data/Android/2/1")
     Observable<String> getAndroidSingle();
 
     /**
-     *  获取一个集合
+     * 获取一个集合
      */
     @GET("data/Android/2/10")
     Observable<String> getAndroidList();
 
     /**
-     *  获取一个集合
+     * 获取一个集合
      */
-    @GET("data/Android/2/")
-    Observable<String> getAndroidCountList(@Query("count")String count);
+    @GET("data/Android/2/{count}")
+    Observable<String> getAndroidCountList(@Path("count") String count);
 
     /**
-     *  下载
+     * 下载
      */
     @GET
     Observable<ResponseBody> downloadTest(@Header("range") String start, @Url String url);

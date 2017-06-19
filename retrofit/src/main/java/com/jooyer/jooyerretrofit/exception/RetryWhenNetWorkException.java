@@ -1,32 +1,35 @@
 package com.jooyer.jooyerretrofit.exception;
 
 import java.net.ConnectException;
-import java.net.SocketTimeoutException;
+import java.net.SocketException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import rx.Observable;
-import rx.functions.Func1;
-import rx.functions.Func2;
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.Function;
+
 
 /**
- *  重试条件
+ * 重试条件
  * Created by Jooyer on 2017/2/14
  */
-public class RetryWhenNetWorkException implements Func1<Observable<? extends Throwable>,Observable<?>> {
+public class RetryWhenNetWorkException implements Function<Observable<? extends Throwable>, Observable<?>> {
 
     /**
-     *  重试次数
+     * 重试次数
      */
     private int mCount = 3;
 
     /**
-     *  延迟时长
+     * 延迟时长
      */
     private long mDelay = 3000;
 
     /**
-     *  每次重试间隔时长
+     * 每次重试间隔时长
      */
     private long mPerIncreaseDelay = 3000;
 
@@ -44,23 +47,25 @@ public class RetryWhenNetWorkException implements Func1<Observable<? extends Thr
         mPerIncreaseDelay = perIncreaseDelay;
     }
 
+
+
     @Override
-    public Observable<?> call(Observable<? extends Throwable> observable) {
+    public Observable<?> apply(@NonNull Observable<? extends Throwable> observable) throws Exception {
         return observable
                 // rang --> 发射从1开始,一共发射 mCount + 1 次
-                .zipWith(Observable.range(1, mCount + 1), new Func2<Throwable, Integer, Wrapper>() {
+                .zipWith(Observable.range(1, mCount + 1), new BiFunction<Throwable, Integer, Wrapper>() {
                     @Override
-                    public Wrapper call(Throwable throwable, Integer integer) {
-                        return new Wrapper(integer,throwable);
+                    public Wrapper apply(@NonNull Throwable throwable, @NonNull Integer integer) throws Exception {
+                        return new Wrapper(integer, throwable);
                     }
-                }).flatMap(new Func1<Wrapper, Observable<?>>() {
+                }).flatMap(new Function<Wrapper, ObservableSource<?>>() {
                     @Override
-                    public Observable<?> call(Wrapper wrapper) {
-                        if ( (wrapper.mThrowable instanceof ConnectException ||
-                                wrapper.mThrowable instanceof SocketTimeoutException ||
+                    public ObservableSource<?> apply(@NonNull Wrapper wrapper) throws Exception {
+                        if ((wrapper.mThrowable instanceof ConnectException ||
+                                wrapper.mThrowable instanceof SocketException ||
                                 wrapper.mThrowable instanceof TimeoutException) &&
-                                wrapper.mCount < mCount + 1
-                                ){
+                                wrapper.mCount < mCount + 1) {
+
                             return Observable.timer(mDelay + (wrapper.mCount - 1) * mPerIncreaseDelay, TimeUnit.MILLISECONDS);
                         }
                         return Observable.error(wrapper.mThrowable);
@@ -68,7 +73,7 @@ public class RetryWhenNetWorkException implements Func1<Observable<? extends Thr
                 });
     }
 
-    static class Wrapper{
+    static class Wrapper {
         private int mCount;
 
         private Throwable mThrowable;

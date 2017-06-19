@@ -34,9 +34,9 @@ public class CacheInterceptor implements Interceptor {
             //有网,设置缓存失效时间 一分钟
             int maxAge = 60;
             responseLatest = response.newBuilder()
-                    .removeHeader("Pragma") // TODO 没明白
-                    .removeHeader("Cache-Control")
-                    .header("Cache-Control", "public, max-age=" + maxAge)
+                    .removeHeader("Pragma") // 清除头信息，因为服务器如果不支持，会返回一些干扰信息，不清除下面无法生效
+                    .removeHeader("Cache-Control") // 清除头信息，因为服务器如果不支持，会返回一些干扰信息，不清除下面无法生效
+                    .header("Cache-Control", "public, max-age=" + maxAge) // 这里设置缓存时间, maxAge = 0 表示不缓存
                     .build();
 
         } else {

@@ -7,7 +7,7 @@ apply plugin: 'com.jfrog.bintray'
 
 // 这个version是区分library版本的，因此当我们需要更新library时记得修改这个version
 // 这个version影响后面的引用
-version = "0.0.2"
+version = "1.0.0"
 
 android {
     compileSdkVersion 25
@@ -46,31 +46,29 @@ greendao {
 
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:25.3.1'
     testCompile 'junit:junit:4.12'
-
-
-    compile 'io.reactivex:rxjava:1.2.1'
-    compile 'io.reactivex:rxandroid:1.2.1'
-    compile 'com.squareup.retrofit2:retrofit:2.0.0-beta4'
-    compile 'com.squareup.retrofit2:converter-scalars:2.0.0-beta4'
-    compile 'com.squareup.retrofit2:adapter-rxjava:2.0.0-beta4'
-    compile 'com.alibaba:fastjson:1.2.21'
-
+    compile 'io.reactivex.rxjava2:rxjava:2.1.0'
+    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    compile 'com.squareup.retrofit2:converter-scalars:2.3.0'
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+    //    compile 'com.alibaba:fastjson:1.2.21'
     // GreenDao 需要部分
     compile 'org.greenrobot:greendao:3.2.0'
-
+    // Gson
+    compile 'com.google.code.gson:gson:2.8.1'
 }
 
 
 def siteUrl = 'https://github.com/Jooyer/JooyerRetrofit'   // 项目的主页
 def gitUrl = 'https://github.com/Jooyer/JooyerRetrofit.git'   // Git仓库的url
 def issueUrl = 'https://github.com/Jooyer/JooyerRetrofit/issues' // issue 地址
-group = "com.jooyer.jooyerretrofit"            // Maven Group ID for the artifact，一般填你唯一的包名
+
 
 install {
     repositories.mavenInstaller {
@@ -80,6 +78,9 @@ install {
                 packaging 'aar'
                 // Add your description here
                 name 'Android Retrofit library'     //项目的描述 你可以多写一点
+
+
+
                 url siteUrl
                 // Set your license
                 licenses {
@@ -152,5 +153,16 @@ bintray {
         labels = ['android']    //标签
         publish = true
         publicDownloadNumbers = true
+
     }
 }
+
+// Maven Group ID for the artifact，一般填你唯一的包名
+group = "com.jooyer.jooyerretrofit"
+
+//publish {
+//    userOrg = 'Jooyer'      //bintray注册的用户名
+//    groupId = 'com.jooyer.jooyerretrofit'         //compile引用时的第1部分groupId
+//    artifactId = 'JooyerRetrofit'     //compile引用时的第2部分项目名  --> 这个就是 Module 的名字 ,如果不配置这个,需要把 Module 名字写好
+//    publishVersion = '0.0.2'    //compile引用时的第3部分版本号
+//}

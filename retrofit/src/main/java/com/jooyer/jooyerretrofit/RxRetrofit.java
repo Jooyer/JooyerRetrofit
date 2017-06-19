@@ -4,19 +4,22 @@ import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.jooyer.jooyerretrofit.http.CacheInterceptor;
 import com.jooyer.jooyerretrofit.http.LoggingInterceptor;
+import com.jooyer.jooyerretrofit.http.TokenInterceptor;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Observable;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+
 
 /**
  * 初始化
@@ -59,16 +62,18 @@ public class RxRetrofit {
      */
     public void init(final Context context, final String cacheName, final String baseUrl,
                      final boolean isAddLoggingInterceptor, final boolean isNeedOkHttpCache) {
-        Observable.create(new Observable.OnSubscribe<Void>() {
-            @Override
-            public void call(Subscriber<? super Void> subscriber) {
-                mContext = context;
-                mBaseUrl = baseUrl;
-                initClient(isAddLoggingInterceptor, isNeedOkHttpCache, cacheName);
-            }
-        }).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe();
+
+        Observable.timer(500,TimeUnit.MILLISECONDS)
+                .observeOn(Schedulers.io())
+                .subscribe(new Consumer<Long>() {
+                    @Override
+                    public void accept(@NonNull Long aLong) throws Exception {
+                        Log.i(TAG,"=====init======72======= ");
+                        mContext = context;
+                        mBaseUrl = baseUrl;
+                        initClient(isAddLoggingInterceptor, isNeedOkHttpCache, cacheName);
+                    }
+                });
     }
 
     /**
@@ -96,6 +101,10 @@ public class RxRetrofit {
         if (isAddLoggingInterceptor) {
             mBuilder.addInterceptor(new LoggingInterceptor());
         }
+
+        // 添加 Token 拦截器
+        mBuilder.addInterceptor(new TokenInterceptor());
+//        mBuilder.addNetworkInterceptor()
 
         // 设置自动重连
         mBuilder.retryOnConnectionFailure(true);

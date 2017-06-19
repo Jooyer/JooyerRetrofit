@@ -7,7 +7,8 @@ import com.jooyer.jooyerretrofit.rxlife.RxFragment;
 
 import java.lang.ref.SoftReference;
 
-import rx.Observable;
+import io.reactivex.Observable;
+
 
 /**
  * 请求数据和参数的封装类
@@ -204,5 +205,5 @@ public abstract class BaseApi<T> {
      * @param service --> 统一的请求接口
      * @return --> 具体的请求方法
      */
-    public abstract  Observable<String> getObservable(T service);
+    public abstract Observable<String> getObservable(T service);
 }

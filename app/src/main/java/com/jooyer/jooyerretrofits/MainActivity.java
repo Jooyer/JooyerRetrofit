@@ -1,5 +1,10 @@
 package com.jooyer.jooyerretrofits;
 
+/**
+ * http://stackoverflow.com/questions/30475780/how-to-change-the-default-artifactid-of-maven-metadata-xml-when-uploading-to-bin
+ *  上传 bintray 时, articalId 不对,可以参考上面
+ */
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;

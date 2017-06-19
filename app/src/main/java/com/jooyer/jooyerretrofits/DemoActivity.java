@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
 import com.jooyer.jooyerretrofit.HttpManager;
 import com.jooyer.jooyerretrofit.exception.ApiException;
 import com.jooyer.jooyerretrofit.listener.OnHttpCallBackListener;
@@ -24,7 +24,8 @@ public class DemoActivity extends RxAppCompatActivity {
     private OnHttpCallBackListener mOnHttpCallBackListener = new OnHttpCallBackListener() {
         @Override
         public void onNext(String result, String method) {
-            TestBean bean = JSONObject.parseObject(result, TestBean.class);
+            Log.i("Demo", "======onNext======== : " + result);
+            TestBean bean = new Gson().fromJson(result, TestBean.class);
             tv_test.setText(bean.getResults().get(0).getDesc());
         }
 
@@ -32,7 +33,7 @@ public class DemoActivity extends RxAppCompatActivity {
         public void onError(ApiException e) {
             // 注意:获取具体错误显示信息,使用 e.getDisplayMessage();
             Toast.makeText(DemoActivity.this, "错误信息: " + e.getDisplayMessage(), Toast.LENGTH_SHORT).show();
-            Log.i("Demo", "============== : " + e.getMessage());
+            Log.i("Demo", "=======onError======= : " + e.getMessage());
         }
     };
 
@@ -91,6 +92,8 @@ public class DemoActivity extends RxAppCompatActivity {
         // 推荐写法 ,将 HttpService 中的剩余部分链接放在这里,也不会造成缓存的 KEY 发生重复冲突
         api.setMethod("data/Android/2/1");
 
+        // 设置可以取消
+        api.setCancel(true);
         manager.doHttpWithRxActivity(api, HttpService.class);
     }
 

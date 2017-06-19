@@ -4,7 +4,6 @@ import android.content.Context;
 
 import com.jooyer.jooyerretrofit.exception.ExceptionFactory;
 import com.jooyer.jooyerretrofit.exception.RetryWhenNetWorkException;
-import com.jooyer.jooyerretrofit.http.TokenInterceptor;
 import com.jooyer.jooyerretrofit.listener.OnHttpCallBackListener;
 import com.jooyer.jooyerretrofit.rxlife.ActivityLifeCycleEvent;
 import com.jooyer.jooyerretrofit.rxlife.FragmentLifeCycleEvent;
@@ -12,43 +11,35 @@ import com.jooyer.jooyerretrofit.subscribers.ProgressSubscriber;
 
 import java.lang.ref.SoftReference;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
+
 
 /**
+ * http://blog.csdn.net/jdsjlzx/article/details/54845517
  * Http 交互处理类
  * Created by Jooyer on 2017/2/14
  */
 public class HttpManager {
     private SoftReference<OnHttpCallBackListener> mCallBackListener;
     private SoftReference<Context> mContext;
-    private Retrofit mWithTokenRetrofit;
-    private Retrofit mWithOutTokenRetrofit;
-    private boolean isHasToken;
+    private Retrofit mRetrofit;
 
 
     /**
      * 默认是没有 Token 的请求
      */
-    public HttpManager(Context context,OnHttpCallBackListener callBackListener) {
+    public HttpManager(Context context, OnHttpCallBackListener callBackListener) {
+        initRetrofit();
         mCallBackListener = new SoftReference<OnHttpCallBackListener>(callBackListener);
         mContext = new SoftReference<Context>(context);
-        initRetrofit();
-    }
-
-    /**
-     * 带 Token
-     */
-    public HttpManager(Context context,OnHttpCallBackListener callBackListener, boolean hanToken) {
-        mCallBackListener = new SoftReference<OnHttpCallBackListener>(callBackListener);
-        mContext = new SoftReference<Context>(context);
-        isHasToken = hanToken;
-        initRetrofit();
     }
 
 
@@ -56,42 +47,27 @@ public class HttpManager {
      * 自动登录过期标示
      */
     private void initRetrofit() {
-
-        if (isHasToken) {
-            RxRetrofit.getInstance().getOkHttpClientBuilder().addInterceptor(new TokenInterceptor());
-            if (null == mWithTokenRetrofit) {
-                mWithTokenRetrofit = new Retrofit.Builder()
-                        .client(RxRetrofit.getInstance().getOkHttpClientBuilder().build())
-                        .addConverterFactory(ScalarsConverterFactory.create())
-                        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                        .baseUrl(RxRetrofit.getInstance().getBaseUrl())
-                        .build();
-            }
-            isHasToken = false;
-        } else {
-            if (null == mWithOutTokenRetrofit) {
-                mWithOutTokenRetrofit = new Retrofit.Builder()
-                        .client(RxRetrofit.getInstance().getOkHttpClientBuilder().build())
-                        .addConverterFactory(ScalarsConverterFactory.create())
-                        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                        .baseUrl(RxRetrofit.getInstance().getBaseUrl())
-                        .build();
+        if (null == mRetrofit) {
+            synchronized (HttpManager.class){
+                if (null == mRetrofit){
+                    mRetrofit = new Retrofit.Builder()
+                            .client(RxRetrofit.getInstance().getOkHttpClientBuilder().build())
+                            .addConverterFactory(ScalarsConverterFactory.create())
+                            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                            .baseUrl(RxRetrofit.getInstance().getBaseUrl())
+                            .build();
+                }
             }
         }
-
     }
-
-    private  <T> T createApi(Class<T> service) {
-       return isHasToken ? mWithTokenRetrofit.create(service) : mWithOutTokenRetrofit.create(service);
-    }
-
 
     /**
      * 有 RxLife 的 Activity
      */
-    public <T> void doHttpWithRxActivity(BaseApi api,Class<T> service) {
+    @SuppressWarnings("unchecked")
+    public <T> void doHttpWithRxActivity(BaseApi api, Class<T> service) {
         ProgressSubscriber subscriber = new ProgressSubscriber(api, mContext, mCallBackListener);
-        Observable<String> observable = api.getObservable(createApi(service))
+        Observable observable = api.getObservable(mRetrofit.create(service))
                 .retryWhen(new RetryWhenNetWorkException())
                 .onErrorResumeNext(funcException)
                 .compose(api.getRxAppCompatActivity().bindUntilEvent(ActivityLifeCycleEvent.STOP))
@@ -105,9 +81,10 @@ public class HttpManager {
     /**
      * 没有 RxLife 的 Activity
      */
-    public <T> void doHttpWithOutRxActivity(BaseApi api,Class<T> service) {
+    @SuppressWarnings("unchecked")
+    public <T> void doHttpWithOutRxActivity(BaseApi api, Class<T> service) {
         ProgressSubscriber subscriber = new ProgressSubscriber(api, mContext, mCallBackListener);
-        Observable observable = api.getObservable(createApi(service))
+        Observable observable = api.getObservable(mRetrofit.create(service))
                 .retryWhen(new RetryWhenNetWorkException())
                 .onErrorResumeNext(funcException)
                 .subscribeOn(Schedulers.io())
@@ -120,9 +97,10 @@ public class HttpManager {
     /**
      * 有 RxLife 的 Fragment
      */
+    @SuppressWarnings("unchecked")
     public <T> void doHttpWithRxFragment(BaseApi api, Class<T> service) {
         ProgressSubscriber subscriber = new ProgressSubscriber(api, mContext, mCallBackListener);
-        Observable observable = api.getObservable(createApi(service))
+        Observable observable = api.getObservable(mRetrofit.create(service))
                 .retryWhen(new RetryWhenNetWorkException())
                 .onErrorResumeNext(funcException)
                 .compose(api.getRxFragment().bindUntilEvent(FragmentLifeCycleEvent.STOP))
@@ -137,9 +115,10 @@ public class HttpManager {
     /**
      * 没有 RxLife 的 Fragment
      */
+    @SuppressWarnings("unchecked")
     public <T> void doHttpWithOutRxFragment(BaseApi api, Class<T> service) {
         ProgressSubscriber subscriber = new ProgressSubscriber(api, mContext, mCallBackListener);
-        Observable observable = api.getObservable(createApi(service))
+        Observable observable = api.getObservable(mRetrofit.create(service))
                 .retryWhen(new RetryWhenNetWorkException())
                 .onErrorResumeNext(funcException)
                 .subscribeOn(Schedulers.io())
@@ -153,9 +132,9 @@ public class HttpManager {
      * 异常处理类
      */
 
-    Func1 funcException = new Func1<Throwable, Observable>() {
+    private Function funcException = new Function<Throwable, ObservableSource>() {
         @Override
-        public Observable call(Throwable throwable) {
+        public ObservableSource apply(@NonNull Throwable throwable) throws Exception {
             return Observable.error(ExceptionFactory.analysisException(throwable));
         }
     };

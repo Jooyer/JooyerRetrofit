@@ -10,7 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
 import com.jooyer.jooyerretrofit.HttpManager;
 import com.jooyer.jooyerretrofit.exception.ApiException;
 import com.jooyer.jooyerretrofit.listener.OnHttpCallBackListener;
@@ -29,15 +29,16 @@ public class DemoFragment extends RxFragment {
     private OnHttpCallBackListener mOnHttpCallBackListener = new OnHttpCallBackListener() {
         @Override
         public void onNext(String result, String method) {
-            TestBean bean = JSONObject.parseObject(result, TestBean.class);
-            tv_test.setText(bean.getResults().size());
+            Log.i("Demo", "======onNext======== : " + result);
+            TestBean bean = new Gson().fromJson(result, TestBean.class);
+            tv_test.setText(bean.getResults().get(0).getDesc());
         }
 
         @Override
         public void onError(ApiException e) {
             // 注意:获取具体错误显示信息,使用 e.getDisplayMessage();
             Toast.makeText(getContext(), "错误信息: " + e.getDisplayMessage(), Toast.LENGTH_SHORT).show();
-            Log.i("Demo", "============== : " + e.getMessage());
+            Log.i("Demo", "======onError======== : " + e.getMessage());
         }
     };
 
@@ -84,6 +85,7 @@ public class DemoFragment extends RxFragment {
             public void onClick(View view) {
                 mApi.setRxFragment(DemoFragment.this);
                 mApi.setCount(4);
+                mApi.setCancel(true);
                 manager.doHttpWithRxFragment(mApi,HttpService.class);
             }
         });

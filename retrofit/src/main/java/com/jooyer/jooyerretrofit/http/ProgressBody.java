@@ -5,6 +5,11 @@ import com.jooyer.jooyerretrofit.listener.OnUploadProgressListener;
 
 import java.io.IOException;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okio.Buffer;
@@ -12,10 +17,6 @@ import okio.BufferedSink;
 import okio.ForwardingSink;
 import okio.Okio;
 import okio.Sink;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 
 /**
  * 自定义上传回调进度
@@ -89,9 +90,9 @@ public class ProgressBody extends RequestBody {
                 Observable.just(curWriteBytesCount)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())
-                        .subscribe(new Action1<Long>() {
+                        .subscribe(new Consumer<Long>() {
                             @Override
-                            public void call(Long aLong) {
+                            public void accept(@NonNull Long aLong) throws Exception {
                                 if (null != mUploadProgressListener)
                                     mUploadProgressListener.onUploadProgress(curWriteBytesCount,totalBytesCount);
                             }

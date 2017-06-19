@@ -10,10 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import rx.Observable;
-import rx.functions.Func1;
-import rx.subjects.BehaviorSubject;
-
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.ObservableTransformer;
+import io.reactivex.functions.Predicate;
+import io.reactivex.subjects.BehaviorSubject;
 /**
  * Created by Jooyer on 2016/11/28
  */
@@ -124,20 +125,18 @@ public abstract class RxFragment extends Fragment {
 
 
     @NonNull
-    public <T> Observable.Transformer<T, T> bindUntilEvent(@NonNull final FragmentLifeCycleEvent event) {
-        return new Observable.Transformer<T, T>() {
+    public <T> ObservableTransformer<T,T> bindUntilEvent(@NonNull final FragmentLifeCycleEvent event) {
+        return new ObservableTransformer<T, T>() {
             @Override
-            public Observable<T> call(Observable<T> sourceObservable) {
-                Observable<FragmentLifeCycleEvent> compareLifecycleObservable =
-                        lifeSubject.takeFirst(new Func1<FragmentLifeCycleEvent, Boolean>() {
-                            @Override
-                            public Boolean call(FragmentLifeCycleEvent fragmentLifeCycleEvent) {
-//                                LogUtils.i("info","======RxFragment========" + event + "==========" + fragmentLifeCycleEvent);
-                                /* 当返回true时表示停止请求网络 */
-                                return fragmentLifeCycleEvent.equals(event);
-                            }
-                        });
-                return sourceObservable.takeUntil(compareLifecycleObservable);
+            public ObservableSource<T> apply(@io.reactivex.annotations.NonNull Observable<T> upstream) {
+                Observable<FragmentLifeCycleEvent> lifeCycleEventObservable = lifeSubject.filter(new Predicate<FragmentLifeCycleEvent>() {
+                    @Override
+                    public boolean test(@io.reactivex.annotations.NonNull FragmentLifeCycleEvent fragmentLifeCycleEvent) throws Exception {
+                        return fragmentLifeCycleEvent.equals(event);
+                    }
+                });
+
+                return upstream.takeUntil(lifeCycleEventObservable);
             }
         };
     }
