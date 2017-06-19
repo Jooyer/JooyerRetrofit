@@ -3,10 +3,10 @@
 
 ## 联系我:
 如果在使用中,有任何疑问,可以加 我微信(QQ) 712952521,我乐意与你探讨!<br/>
-请关注 [我的Github]("https://github.com/Jooyer")
+请关注我的 [Github]("https://github.com/Jooyer")
 
 ## 版本(Version)
-&emsp;	1.0.0	
+&emsp;	1.0.0	<br/>
 &emsp;&emsp;1.将 Retrofit 版本从 2.0.0 升级到 2.3.0,将 RxJava 从 1.2.1 升级到 2.0.1<br/>
 &emsp;&emsp;2.修复在上传文件时,Retroift报 没有 value 的错误而导致无法上传!<br/>
 &emsp;&emsp;3.精简了一部分方法,减少方法数!
@@ -21,7 +21,7 @@
 # Add dependency
 
 ## Gradle
-	compile 'com.jooyer.jooyerretrofit:retrofit:0.0.3'
+	compile 'com.jooyer.jooyerretrofit:retrofit:1.0.0'
 
 ## Maven
 
