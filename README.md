@@ -1,5 +1,5 @@
 # JooyerRetrofit
-这是一个使用 RxJava + Retrofit + FastJson 封装的库,内部使用了 RxLife 来管理请求状态与 Activivty/Fragment 的生命周期同步, 同时默认使用了GreenDao来处理缓存!
+这是一个使用 RxJava + Retrofit Gson 封装的库,内部使用了 RxLife 来管理请求状态与 Activivty/Fragment 的生命周期同步, 同时默认使用了GreenDao来处理缓存!
 
 ## 联系我:
 如果在使用中,有任何疑问,可以加 我微信(QQ) 712952521,我乐意与你探讨!<br/>
