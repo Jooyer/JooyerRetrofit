@@ -3,7 +3,7 @@
 
 ## 联系我:
 如果在使用中,有任何疑问,可以加 我微信(QQ) 712952521,我乐意与你探讨!<br/>
-请关注我的 [Github]("https://github.com/Jooyer")
+请关注我的 [Github](https://github.com/Jooyer)
 
 ## 版本(Version)
 &emsp;	1.0.0	<br/>
