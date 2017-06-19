@@ -24,7 +24,7 @@
 	<dependency>
 	  <groupId>com.jooyer.jooyerretrofit</groupId>
 	  <artifactId>retrofit</artifactId>
-	  <version>0.0.2</version>
+	  <version>1.0.0</version>
 	  <type>pom</type>
 	</dependency>
 
