@@ -1,17 +1,20 @@
 apply plugin: 'com.android.library'
 apply plugin: 'org.greenrobot.greendao'     // GreenDao 需要部分
+apply plugin: 'com.novoda.bintray-release'
+publish {
+    repoName = 'maven'           //bintray仓库名
+    userOrg = 'jooyer'           //bintray注册的用户名
+    groupId = 'com.jooyer.jooyerretrofit'            //compile引用时的第1部分groupId
+    artifactId = 'retrofit'       //compile引用时的第2部分项目名
+    publishVersion = '1.2.0'       //compile引用时的第3部分版本号
+    desc = 'A library of the Retrofit , more convenient callback and request management!'
+    website = 'https://github.com/Jooyer/JooyerRetrofit'
+}
 
-// 添加 bintray 插件
-apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'com.jfrog.bintray'
-
-// 这个version是区分library版本的，因此当我们需要更新library时记得修改这个version
-// 这个version影响后面的引用
-version = "1.0.0"
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion '26.0.2'
 
     resourcePrefix "Jooyer_Retrofit_" // 资源前缀
 
@@ -31,9 +34,22 @@ android {
         }
     }
 
-    lintOptions{
-        abortOnError false
+    lintOptions{ // 忽略错误信息
+        abortOnError false // 即使有报错也不会停止打包
+        checkReleaseBuilds false // 打包Release版本的时候也不进行Lint检测
     }
+
+//    packagingOptions{
+//        exclude 'META-INF/NOTICE' // will not include NOTICE file
+//        exclude 'META-INF/LICENSE' // will not include LICENSE file
+//        // as noted by @Vishnuvathsan you may also need to include
+//        // variations on the file name. It depends on your dependencies.
+//        // Some other common variations on notice and license file names
+//        exclude 'META-INF/notice'
+//        exclude 'META-INF/notice.txt'
+//        exclude 'META-INF/license'
+//        exclude 'META-INF/license.txt'
+//    }
 
 }
 
@@ -47,122 +63,25 @@ greendao {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    testCompile 'junit:junit:4.12'
-    compile 'io.reactivex.rxjava2:rxjava:2.1.0'
-    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
-    compile 'com.squareup.retrofit2:converter-scalars:2.3.0'
-    compile 'com.squareup.retrofit2:retrofit:2.3.0'
-    compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+//    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+//        exclude group: 'com.android.support', module: 'support-annotations'
+//    })
+    provided 'com.android.support:appcompat-v7:25.3.1'
+//    testCompile 'junit:junit:4.12'
+    provided 'io.reactivex.rxjava2:rxjava:2.1.5'
+    provided 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    provided 'com.squareup.retrofit2:converter-scalars:2.3.0'
+    provided 'com.squareup.retrofit2:retrofit:2.3.0'
+    provided 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.8.0'
     //    compile 'com.alibaba:fastjson:1.2.21'
     // GreenDao 需要部分
-    compile 'org.greenrobot:greendao:3.2.0'
-    // Gson
-    compile 'com.google.code.gson:gson:2.8.1'
+    provided 'org.greenrobot:greendao:3.2.2'
+
 }
 
 
-def siteUrl = 'https://github.com/Jooyer/JooyerRetrofit'   // 项目的主页
-def gitUrl = 'https://github.com/Jooyer/JooyerRetrofit.git'   // Git仓库的url
-def issueUrl = 'https://github.com/Jooyer/JooyerRetrofit/issues' // issue 地址
+//def siteUrl = 'https://github.com/Jooyer/JooyerRetrofit'   // 项目的主页
+//def gitUrl = 'https://github.com/Jooyer/JooyerRetrofit.git'   // Git仓库的url
+//def issueUrl = 'https://github.com/Jooyer/JooyerRetrofit/issues' // issue 地址
 
-
-install {
-    repositories.mavenInstaller {
-        // This generates POM.xml with proper parameters
-        pom {
-            project {
-                packaging 'aar'
-                // Add your description here
-                name 'Android Retrofit library'     //项目的描述 你可以多写一点
-
-
-
-                url siteUrl
-                // Set your license
-                licenses {
-                    license {
-                        name 'The Apache Software License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-                developers {
-                    developer {
-                        id 'Jooyer'        //填写的一些基本信息
-                        name 'Jooyer'
-                        email 'Jooyer@outlook.com'
-                    }
-                }
-                scm {
-                    connection gitUrl
-                    developerConnection gitUrl
-                    url siteUrl
-                }
-            }
-        }
-    }
-}
-
- // 解决打 JavaDoc 乱码问题
-tasks.withType(Javadoc) {
-    options.addStringOption('Xdoclint:none', '-quiet')
-    options.addStringOption('encoding', 'UTF-8')
-    options.addStringOption('charSet', 'UTF-8')
-}
-
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
-}
-
-task javadoc(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs // 指定了源码的位置
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-}
-
-// 这里 dependsOn 意为仅当 javadoc 完成后才开始本task
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-// 将本地编译过的类库及源码及doc文件上传到Maven仓库中package中，
-// 需要将task添加到一个archive中，只需要向库module下的build.gradle中添加如下代码
-artifacts {
-    archives javadocJar
-    archives sourcesJar
-}
-
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-bintray {
-    user = properties.getProperty("bintray.user")
-    key = properties.getProperty("bintray.apikey")
-    configurations = ['archives']
-    pkg {
-        repo = "maven"  //发布到Bintray的哪个仓库
-        name = "JooyerRetrofit"    //发布到JCenter上的项目名字
-        desc = "A library of the Retrofit , more convenient callback and request management!" //描述
-        websiteUrl = siteUrl
-        issueTrackerUrl = issueUrl
-        vcsUrl = gitUrl
-        licenses = ["Apache-2.0"]
-        labels = ['android']    //标签
-        publish = true
-        publicDownloadNumbers = true
-
-    }
-}
-
-// Maven Group ID for the artifact，一般填你唯一的包名
-group = "com.jooyer.jooyerretrofit"
-
-//publish {
-//    userOrg = 'Jooyer'      //bintray注册的用户名
-//    groupId = 'com.jooyer.jooyerretrofit'         //compile引用时的第1部分groupId
-//    artifactId = 'JooyerRetrofit'     //compile引用时的第2部分项目名  --> 这个就是 Module 的名字 ,如果不配置这个,需要把 Module 名字写好
-//    publishVersion = '0.0.2'    //compile引用时的第3部分版本号
-//}

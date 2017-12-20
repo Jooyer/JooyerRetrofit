@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion "26.0.2"
     defaultConfig {
         applicationId "com.jooyer.jooyerretrofit"
         minSdkVersion 21
@@ -32,11 +32,20 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile project(':retrofit')
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.1'
     compile 'com.android.support:design:25.3.1'
     testCompile 'junit:junit:4.12'
-
-//    compile 'com.jooyer.jooyerretrofit:JooyerRetrofit:0.0.2'
+    // Gson
+    compile 'com.google.code.gson:gson:2.8.2'
+    compile 'io.reactivex.rxjava2:rxjava:2.1.5'
+    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    compile 'com.squareup.retrofit2:converter-scalars:2.3.0'
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+    compile   'com.yanzhenjie:permission:1.1.2'
+    //    compile 'com.alibaba:fastjson:1.2.21'
+    // GreenDao 需要部分
+    compile 'org.greenrobot:greendao:3.2.2'
+    compile project(':retrofit')
 }

@@ -4,36 +4,44 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="10dp"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
     android:orientation="vertical"
-    >
+    android:paddingTop="@dimen/activity_vertical_margin">
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:onClick="onNormal"
         android:background="#6dfda7"
-        android:onClick="onActivityTest"
-        android:text="测试在Activity的使用"
-        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:text="一般使用方式"
         android:textColor="#000000"
-        android:textSize="20sp"
+        android:textSize="16sp"
         />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginTop="40dp"
+        android:onClick="onDown"
         android:background="#6dfda7"
-        android:onClick="onFragmentTest"
-        android:text="测试在Fragment的使用"
+        android:layout_marginTop="10dp"
+        android:text="下载"
         android:textColor="#000000"
-        android:textSize="20sp"
-        android:gravity="center"
+        android:textSize="16sp"
         />
 
-    <FrameLayout
-        android:id="@+id/fl_container"
+
+    <Button
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="50dp"
+        android:onClick="onUpload"
+        android:background="#6dfda7"
+        android:layout_marginTop="10dp"
+        android:text="上传"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        />
 
 </LinearLayout>
