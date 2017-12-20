@@ -1,27 +1,34 @@
 # JooyerRetrofit
-这是一个使用 RxJava + Retrofit + FastJson 封装的库,内部使用了 RxLife 来管理请求状态与 Activivty/Fragment 的生命周期同步, 同时默认使用了GreenDao来处理缓存!
+这是一个使用 RxJava + Retrofit + Gson 封装的库,内部使用了 RxLife 来管理请求状态与 Activivty/Fragment 的生命周期同步, 同时默认使用了GreenDao来处理缓存!
 
 ## 联系我:
 如果在使用中,有任何疑问,可以加 我微信(QQ) 712952521,我乐意与你探讨!<br/>
-请关注 [我的Github]("https://github.com/Jooyer")
+请关注我的 [Github](https://github.com/Jooyer)
 
 ## 版本(Version)
-&emsp;	0.0.3	修改 0.0.2 版本中的的不正确部分!更新了参数格式,见参知意!
+&emsp;	1.0.0	<br/>
+&emsp;&emsp;1.将 Retrofit 版本从 2.0.0 升级到 2.3.0,将 RxJava 从 1.2.1 升级到 2.0.1<br/>
+&emsp;&emsp;2.修复在上传文件时,Retroift报 没有 value 的错误而导致无法上传!<br/>
+&emsp;&emsp;3.精简了一部分方法,减少方法数!
 
-&emsp;	0.0.2	首次提交,出现部分参数格式不整齐,ProgressDialog 文本提示位置不正确!
+&emsp;	0.0.3	
+&emsp;&emsp;修改 0.0.2 版本中的的不正确部分!更新了参数格式,见参知意!
+
+&emsp;	0.0.2	
+&emsp;&emsp;首次提交,出现部分参数格式不整齐,ProgressDialog 文本提示位置不正确!
 
 
 # Add dependency
 
 ## Gradle
-	compile 'com.jooyer.jooyerretrofit:retrofit:0.0.3'
+	compile 'com.jooyer.jooyerretrofit:retrofit:1.0.0'
 
 ## Maven
 
 	<dependency>
 	  <groupId>com.jooyer.jooyerretrofit</groupId>
 	  <artifactId>retrofit</artifactId>
-	  <version>0.0.2</version>
+	  <version>1.0.0</version>
 	  <type>pom</type>
 	</dependency>
 
